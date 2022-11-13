@@ -17,7 +17,7 @@ export default function PackagesNearBy() {
   const [selectedOffer, setSelectedOffer] = useState(null);
   function fetchOffers() {
     axios
-      .get("http://192.168.43.100:8090/offer/getall")
+      .get("http://192.168.1.60:8090/offer/getall")
       .then((res) => setOffers(res.data));
   }
 

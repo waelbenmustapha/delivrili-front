@@ -39,7 +39,7 @@ const SignupDelivery = ({ navigation }) => {
       passwordmatch == true
     ) {
       axios
-        .post("http://192.168.43.100:8090/auth/signup-delivery", {
+        .post("http://192.168.1.60:8090/auth/signup-delivery", {
           email: data.email,
           password: data.password,
           name: data.username,
