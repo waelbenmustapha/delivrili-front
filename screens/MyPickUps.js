@@ -1,32 +1,38 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, RefreshControl } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import { useFocusEffect } from "@react-navigation/native";
+const wait = (timeout) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
 
-const MyPackagesSender = ({navigation}) => {
+const MyPickUps = () => {
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchData()
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
   const auth = useAuth();
-  const [mypackages, setMypackages] = useState([]);
-  const fatchMyPackages = () => {
+  const [pickups,setPickUps]=useState([])
+  const fetchData = () => {
     axios
-      .get("http://192.168.43.100:8090/offer/get-offers-by-user/" + auth.user.id)
-      .then((res) => {
-        setMypackages(res.data);
-        console.log(res.data);
-      });
+      .get("http://192.168.43.100:8090/offer/get-offers-by-delivery-man/" + auth.user.id)
+      .then((res) => setPickUps(res.data));
   };
-
-  useFocusEffect(
-    React.useCallback(() => {
-      fatchMyPackages();
-    }, [])
-  );
-
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
-    <ScrollView>
-      {mypackages.map((el) => (
+    <ScrollView
+    refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+      />}>
+      {pickups.map((el) => (
         <TouchableOpacity
-        onPress={()=>navigation.navigate("packagerequests",{id:el.id})}
           style={{
             backgroundColor: "white",
             height: 150,
@@ -84,9 +90,10 @@ const MyPackagesSender = ({navigation}) => {
           </View>
         </TouchableOpacity>
       ))}
-      
     </ScrollView>
   );
 };
 
-export default MyPackagesSender;
+export default MyPickUps;
+
+

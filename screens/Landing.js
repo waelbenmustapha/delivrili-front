@@ -28,7 +28,7 @@ const Landing = ({ navigation }) => {
       <Text style={{ textAlign: "center", fontSize: 18, fontWeight: "bold" }}>
         Welcome to Delivrili ...
       </Text>
-      <Image source={require("./assets/loading.gif")} />
+      <Image source={require("../assets/loading.gif")} />
     </View>
   );
 };

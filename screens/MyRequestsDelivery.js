@@ -1,32 +1,36 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, RefreshControl } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import { useFocusEffect } from "@react-navigation/native";
+const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+const MyRequestsDelivery = () => {
+    const [refreshing, setRefreshing] = React.useState(false);
 
-const MyPackagesSender = ({navigation}) => {
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchData()
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
   const auth = useAuth();
-  const [mypackages, setMypackages] = useState([]);
-  const fatchMyPackages = () => {
+  const [requests,setRequests]=useState([])
+  const fetchData = () => {
     axios
-      .get("http://192.168.43.100:8090/offer/get-offers-by-user/" + auth.user.id)
-      .then((res) => {
-        setMypackages(res.data);
-        console.log(res.data);
-      });
+      .get("http://192.168.43.100:8090/requests/getbydelid/" + auth.user.id)
+      .then((res) => setRequests(res.data));
   };
-
-  useFocusEffect(
-    React.useCallback(() => {
-      fatchMyPackages();
-    }, [])
-  );
-
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
-    <ScrollView>
-      {mypackages.map((el) => (
+    <ScrollView  refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />}>
+      {requests.map((el) => (
         <TouchableOpacity
-        onPress={()=>navigation.navigate("packagerequests",{id:el.id})}
           style={{
             backgroundColor: "white",
             height: 150,
@@ -37,10 +41,10 @@ const MyPackagesSender = ({navigation}) => {
           }}
           key={el.id}
         >
-          <Text style={{ fontSize: 16, fontWeight: "bold" }}>{el.name}</Text>
+          <Text style={{ fontSize: 16, fontWeight: "bold" }}>{el.offer.name}</Text>
           <View style={{ display: "flex", flexDirection: "row" }}>
             <Image
-              source={{ uri: el.image }}
+              source={{ uri: el.offer.image }}
               style={{
                 height: 100,
                 width: 100,
@@ -57,7 +61,7 @@ const MyPackagesSender = ({navigation}) => {
                   marginBottom: 10,
                 }}
               >
-                Price : {el.price}
+                Price : {el.offer.price}
               </Text>
               <Text
                 style={{
@@ -67,7 +71,7 @@ const MyPackagesSender = ({navigation}) => {
                   marginBottom: 10,
                 }}
               >
-                Weight : {el.weight}
+                Weight : {el.offer.weight}
               </Text>
               <Text
                 style={{
@@ -75,7 +79,7 @@ const MyPackagesSender = ({navigation}) => {
                   marginLeft: 25,
                   marginBottom: 10,
                   fontWeight: "500",
-                  color:el.status==="accepted"?"green":"black"
+                  color:el.status==="accepted"?"green":el.status==="rejected"?"red":"black"
                 }}
               >
                 Status : {el.status}
@@ -84,9 +88,8 @@ const MyPackagesSender = ({navigation}) => {
           </View>
         </TouchableOpacity>
       ))}
-      
     </ScrollView>
   );
 };
 
-export default MyPackagesSender;
+export default MyRequestsDelivery;

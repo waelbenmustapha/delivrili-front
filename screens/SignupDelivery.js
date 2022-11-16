@@ -23,10 +23,12 @@ const SignupDelivery = ({ navigation }) => {
     username: "",
     email: "",
     vehicle:"",
+    phone:"",
     password: "",
     confirm_password: "",
     check_textInputChange: false,
     check_vehicleInputChange: false,
+    check_phoneInputChange: false,
     check_emailInputChange: false,
     secureTextEntry: true,
     confirm_secureTextEntry: true,
@@ -39,11 +41,12 @@ const SignupDelivery = ({ navigation }) => {
       passwordmatch == true
     ) {
       axios
-        .post("http://192.168.1.60:8090/auth/signup-delivery", {
+        .post("http://192.168.43.100:8090/auth/signup-delivery", {
           email: data.email,
           password: data.password,
           name: data.username,
-          vehicle:data.vehicle
+          vehicle:data.vehicle,
+          phoneNumber:data.phone
         })
         .then((res) => {
           if (res.status == 200) {
@@ -85,6 +88,21 @@ const SignupDelivery = ({ navigation }) => {
         ...data,
         vehicle: val,
         check_vehicleInputChange: false,
+      });
+    }
+  };
+  const phoneInputChange = (val) => {
+    if (val.length !== 0) {
+      setData({
+        ...data,
+        phone: val,
+        check_phoneInputChange: true,
+      });
+    } else {
+      setData({
+        ...data,
+        phone: val,
+        check_phonenputChange: false,
       });
     }
   };
@@ -177,6 +195,22 @@ const SignupDelivery = ({ navigation }) => {
               onChangeText={(val) => vehicleInputChange(val)}
             />
             {data.check_vehicleInputChange ? (
+              <Animatable.View animation="bounceIn">
+                <Feather name="check-circle" color="green" size={20} />
+              </Animatable.View>
+            ) : null}
+            
+          </View>
+          <Text style={[styles.text_footer, { marginTop: 35 }]}>Phone Number</Text>
+          <View style={styles.action}>
+            <FontAwesome name="user-o" color="#f3607b" size={20} />
+            <TextInput
+              placeholder="Your Phone Number"
+              style={styles.textInput}
+              autoCapitalize="none"
+              onChangeText={(val) => phoneInputChange(val)}
+            />
+            {data.check_phoneInputChange ? (
               <Animatable.View animation="bounceIn">
                 <Feather name="check-circle" color="green" size={20} />
               </Animatable.View>

@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import React from "react";
-import { useAuth } from "./context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 const Profile = ({ navigation }) => {
   const auth = useAuth();

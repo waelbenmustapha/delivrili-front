@@ -8,16 +8,26 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import pickup from "./assets/pickup.png";
+import pickup from "../assets/pickup.png";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 export default function PackagesNearBy() {
+  const auth = useAuth();
   const [offers, setOffers] = useState([]);
+  const requestPickup = (offerid) => {
+    axios
+      .post(
+        "http://192.168.43.100:8090/requests/request-offer/" + auth.user.id + "/" + offerid
+      )
+      .then(() => Alert.alert("Request was Succesfull"));
+  };
   const [selectedOffer, setSelectedOffer] = useState(null);
   function fetchOffers() {
     axios
-      .get("http://192.168.1.60:8090/offer/getall")
+      .get("http://192.168.43.100:8090/offer/getall")
       .then((res) => setOffers(res.data));
   }
 
@@ -47,7 +57,13 @@ export default function PackagesNearBy() {
           }}
         >
           <TouchableOpacity
-            style={{ position: "absolute", right: 20, top: 5 ,padding:5,zIndex:55}}
+            style={{
+              position: "absolute",
+              right: 20,
+              top: 5,
+              padding: 5,
+              zIndex: 55,
+            }}
             onPress={() => setSelectedOffer(null)}
           >
             <Text
@@ -60,8 +76,20 @@ export default function PackagesNearBy() {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={{ position: "absolute", opacity:0.8,left: 20, top: 5 ,paddingVertical:5,paddingHorizontal:15,zIndex:55,backgroundColor:"orange",borderRadius:15}}
-            onPress={() => {}}
+            style={{
+              position: "absolute",
+              opacity: 0.8,
+              left: 20,
+              top: 5,
+              paddingVertical: 5,
+              paddingHorizontal: 15,
+              zIndex: 55,
+              backgroundColor: "orange",
+              borderRadius: 15,
+            }}
+            onPress={() => {
+              requestPickup(selectedOffer.id);
+            }}
           >
             <Text
               style={{
@@ -104,11 +132,17 @@ export default function PackagesNearBy() {
           </ScrollView>
         </View>
       )}
-      <MapView initialRegion={{latitude:36.3981215,longitude:10.2935752,latitudeDelta:0.4,longitudeDelta:0.9}} style={styles.map}>
+      <MapView
+        initialRegion={{
+          latitude: 36.3981215,
+          longitude: 10.2935752,
+          latitudeDelta: 0.4,
+          longitudeDelta: 0.9,
+        }}
+        style={styles.map}
+      >
         {selectedOffer && (
-          <Marker
-            coordinate={selectedOffer.dropDownLocation}
-          />
+          <Marker coordinate={selectedOffer.dropDownLocation} />
         )}
         {selectedOffer && (
           <Polyline
@@ -121,7 +155,7 @@ export default function PackagesNearBy() {
         )}
         {offers.map((el) => (
           <Marker
-          key={el.id}
+            key={el.id}
             onPress={() => setSelectedOffer(el)}
             coordinate={el.pickUpLocation}
           >

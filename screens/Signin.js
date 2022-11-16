@@ -89,7 +89,7 @@ const Signin = ({ navigation }) => {
 
   const loginHandle = () => {
     axios
-      .post("http://192.168.1.60:8090/auth/signin", {
+      .post("http://192.168.43.100:8090/auth/signin", {
         email: data.username,
         password: data.password,
       })

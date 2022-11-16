@@ -3,16 +3,19 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import PackagesNearBy from "./PackagesNearBy";
-import CreateOffer from "./CreateOffer";
-import Signup from "./Signup";
-import Signin from "./Signin";
-import Landing from "./Landing";
+import PackagesNearBy from "./screens/PackagesNearBy";
+import CreateOffer from "./screens/CreateOffer";
+import Signup from "./screens/Signup";
+import Signin from "./screens/Signin";
+import Landing from "./screens/Landing";
 import { AuthProvider } from "./context/AuthContext";
-import Profile from "./Profile";
-import SignupSender from "./SignupSender";
-import SignupDelivery from "./SignupDelivery";
-import MyPackagesSender from "./MyPackagesSender";
+import Profile from "./screens/Profile";
+import SignupSender from "./screens/SignupSender";
+import SignupDelivery from "./screens/SignupDelivery";
+import MyPackagesSender from "./screens/MyPackagesSender";
+import MyPackagesStackScreen from "./navigations/MyPackagesStackScreen";
+import MyRequestsDelivery from "./screens/MyRequestsDelivery";
+import MyPickUps from "./screens/MyPickUps";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -43,7 +46,8 @@ function TabNavSender() {
         },
       }}
     >
-      <Tab.Screen  options={{
+      <Tab.Screen
+        options={{
           tabBarLabel: "Send",
           tabBarLabelStyle: {
             fontSize: 12,
@@ -80,10 +84,12 @@ function TabNavSender() {
               </View>
             );
           },
-        }} name="Create Offer" component={CreateOffer} />
+        }}
+        name="Create Offer"
+        component={CreateOffer}
+      />
       <Tab.Screen
         options={{
-         
           tabBarIcon: ({ focused, color, size }) => {
             return focused ? (
               <View
@@ -119,8 +125,9 @@ function TabNavSender() {
         name="Profile"
         component={Profile}
       />
-      <Tab.Screen  options={{
-          tabBarLabel: "Send",
+      <Tab.Screen
+        options={{
+          tabBarLabel: "My Packages",
           tabBarLabelStyle: {
             fontSize: 12,
             fontWeight: "500",
@@ -156,7 +163,10 @@ function TabNavSender() {
               </View>
             );
           },
-        }} name="My Packages" component={MyPackagesSender} />
+        }}
+        name="My Packages"
+        component={MyPackagesStackScreen}
+      />
     </Tab.Navigator>
   );
 }
@@ -170,12 +180,11 @@ function TabNavDelivery() {
           borderTopWidth: 0,
           elevation: 0,
           height: 45,
-          paddingBottom: 8,
         },
       }}
     >
       <Tab.Screen
-      name="nearby"
+        name="nearby"
         options={{
           tabBarLabel: "NearBy",
           tabBarLabelStyle: {
@@ -217,8 +226,92 @@ function TabNavDelivery() {
         component={PackagesNearBy}
       />
       <Tab.Screen
+        name="Requests"
         options={{
-          tabBarLabel: "NearBy",
+          tabBarLabel: "Requests",
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: "500",
+          },
+          tabBarIcon: ({ focused, color, size }) => {
+            return focused ? (
+              <View
+                style={{
+                  width: "100%",
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Image
+                  source={require("./assets/requestsfocus.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  width: "100%",
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Image
+                  source={require("./assets/requests.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              </View>
+            );
+          },
+        }}
+        component={MyRequestsDelivery}
+      />
+      <Tab.Screen
+        name="Pick-Ups"
+        options={{
+          tabBarLabel: "Pick-Ups",
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: "500",
+          },
+          tabBarIcon: ({ focused, color, size }) => {
+            return focused ? (
+              <View
+                style={{
+                  width: "100%",
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Image
+                  source={require("./assets/pickupfocus.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  width: "100%",
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Image
+                  source={require("./assets/pickupp.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              </View>
+            );
+          },
+        }}
+        component={MyPickUps}
+      />
+      <Tab.Screen
+        options={{
+          tabBarLabel: "Profile",
           tabBarLabelStyle: {
             fontSize: 12,
             fontWeight: "500",
