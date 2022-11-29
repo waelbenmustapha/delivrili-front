@@ -8,7 +8,7 @@ const PackageRequests = ({ route, navigations }) => {
   const acceptOrReject = (reqid, num) => {
     axios
       .post(
-        "http://192.168.43.100:8090/requests/changerequeststatus/" +
+        "http://192.168.1.61:8090/requests/changerequeststatus/" +
           reqid +
           "/" +
           num
@@ -17,7 +17,7 @@ const PackageRequests = ({ route, navigations }) => {
   };
   const fetchData = () => {
     axios
-      .get("http://192.168.43.100:8090/requests/getbyofferid/" + id)
+      .get("http://192.168.1.61:8090/requests/getbyofferid/" + id)
       .then((res) => setRequests(res.data));
   };
   useEffect(() => {

@@ -20,14 +20,14 @@ export default function PackagesNearBy() {
   const requestPickup = (offerid) => {
     axios
       .post(
-        "http://192.168.43.100:8090/requests/request-offer/" + auth.user.id + "/" + offerid
+        "http://192.168.1.61:8090/requests/request-offer/" + auth.user.id + "/" + offerid
       )
       .then(() => Alert.alert("Request was Succesfull"));
   };
   const [selectedOffer, setSelectedOffer] = useState(null);
   function fetchOffers() {
     axios
-      .get("http://192.168.43.100:8090/offer/getall")
+      .get("http://192.168.1.61:8090/offer/getall")
       .then((res) => setOffers(res.data));
   }
 

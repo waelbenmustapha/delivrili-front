@@ -17,7 +17,7 @@ const MyRequestsDelivery = () => {
   const [requests,setRequests]=useState([])
   const fetchData = () => {
     axios
-      .get("http://192.168.43.100:8090/requests/getbydelid/" + auth.user.id)
+      .get("http://192.168.1.61:8090/requests/getbydelid/" + auth.user.id)
       .then((res) => setRequests(res.data));
   };
   useEffect(() => {

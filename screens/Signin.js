@@ -88,8 +88,9 @@ const Signin = ({ navigation }) => {
   };
 
   const loginHandle = () => {
+    console.log("login")
     axios
-      .post("http://192.168.43.100:8090/auth/signin", {
+      .post("http://192.168.1.61:8090/auth/signin", {
         email: data.username,
         password: data.password,
       })
