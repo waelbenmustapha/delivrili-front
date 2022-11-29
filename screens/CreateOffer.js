@@ -36,7 +36,7 @@ const CreateOffer = () => {
   function submit() {
     if (name && image && price && weight && pickUp && dropDown) {
       axios
-        .post("http://192.168.1.61:8090/offer/add-offer", {
+        .post("http://192.168.1.46:8090/offer/add-offer", {
           date: date,
           pickUpLocation: pickUp,
           dropDownLocation: dropDown,

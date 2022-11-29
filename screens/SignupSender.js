@@ -37,7 +37,7 @@ const SignupSender = ({ navigation }) => {
       passwordmatch == true
     ) {
       axios
-        .post("http://192.168.1.61:8090/auth/signup-sender", {
+        .post("http://192.168.1.46:8090/auth/signup-sender", {
           email: data.email,
           password: data.password,
           name: data.username,

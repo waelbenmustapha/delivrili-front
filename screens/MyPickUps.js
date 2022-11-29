@@ -1,38 +1,51 @@
-import { View, Text, ScrollView, Image, TouchableOpacity, RefreshControl } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import DraggableFlatList, {
+  ScaleDecorator,
+} from "react-native-draggable-flatlist";
 import { useAuth } from "../context/AuthContext";
 const wait = (timeout) => {
-  return new Promise(resolve => setTimeout(resolve, timeout));
-}
+  return new Promise((resolve) => setTimeout(resolve, timeout));
+};
 
 const MyPickUps = () => {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    fetchData()
+    fetchData();
     wait(2000).then(() => setRefreshing(false));
   }, []);
   const auth = useAuth();
-  const [pickups,setPickUps]=useState([])
+  const [pickups, setPickUps] = useState([]);
   const fetchData = () => {
     axios
-      .get("http://192.168.1.61:8090/offer/get-offers-by-delivery-man/" + auth.user.id)
+      .get(
+        "http://192.168.1.46:8090/offer/get-offers-by-delivery-man/" +
+          auth.user.id
+      )
       .then((res) => setPickUps(res.data));
   };
   useEffect(() => {
     fetchData();
   }, []);
-  return (
-    <ScrollView
-    refreshControl={
-      <RefreshControl
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-      />}>
-      {pickups.map((el) => (
+
+  //drag
+
+  const renderItem = ({ item, drag, isActive }) => {
+    return (
+      <ScaleDecorator >
         <TouchableOpacity
+          onLongPress={drag}
+          disabled={isActive}
           style={{
             backgroundColor: "white",
             height: 150,
@@ -41,12 +54,12 @@ const MyPickUps = () => {
             elevation: 7,
             padding: 10,
           }}
-          key={el.id}
+          key={item.id}
         >
-          <Text style={{ fontSize: 16, fontWeight: "bold" }}>{el.name}</Text>
+          <Text style={{ fontSize: 16, fontWeight: "bold" }}>{item.name}</Text>
           <View style={{ display: "flex", flexDirection: "row" }}>
             <Image
-              source={{ uri: el.image }}
+              source={{ uri: item.image }}
               style={{
                 height: 100,
                 width: 100,
@@ -63,7 +76,7 @@ const MyPickUps = () => {
                   marginBottom: 10,
                 }}
               >
-                Price : {el.price}
+                Price : {item.price}
               </Text>
               <Text
                 style={{
@@ -73,7 +86,7 @@ const MyPickUps = () => {
                   marginBottom: 10,
                 }}
               >
-                Weight : {el.weight}
+                Weight : {item.weight}
               </Text>
               <Text
                 style={{
@@ -81,19 +94,31 @@ const MyPickUps = () => {
                   marginLeft: 25,
                   marginBottom: 10,
                   fontWeight: "500",
-                  color:el.status==="accepted"?"green":"black"
+                  color: item.status === "accepted" ? "green" : "black",
                 }}
               >
-                Status : {el.status}
+                Status : {item.status}
               </Text>
             </View>
           </View>
         </TouchableOpacity>
-      ))}
-    </ScrollView>
+      </ScaleDecorator>
+    );
+  };
+
+  return (
+    <View>
+      <DraggableFlatList
+        refreshControl={ 
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        data={pickups}
+        onDragEnd={({ data }) => setPickUps(data)}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+      />
+    </View>
   );
 };
 
 export default MyPickUps;
-
-

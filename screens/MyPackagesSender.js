@@ -9,7 +9,7 @@ const MyPackagesSender = ({navigation}) => {
   const [mypackages, setMypackages] = useState([]);
   const fatchMyPackages = () => {
     axios
-      .get("http://192.168.1.61:8090/offer/get-offers-by-user/" + auth.user.id)
+      .get("http://192.168.1.46:8090/offer/get-offers-by-user/" + auth.user.id)
       .then((res) => {
         setMypackages(res.data);
         console.log(res.data);
