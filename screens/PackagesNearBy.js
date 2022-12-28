@@ -15,19 +15,41 @@ import pickup from "../assets/pickup.png";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 export default function PackagesNearBy() {
+  async function sendPushNotification(expoPushToken, packagename) {
+    const message = {
+      to: expoPushToken,
+      sound: "default",
+      title: "New Request",
+      body: "package " + packagename + " received a new request",
+      data: { someData: "goes here" },
+    };
+
+    await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Accept-encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
+  }
   const auth = useAuth();
   const [offers, setOffers] = useState([]);
   const requestPickup = (offerid) => {
     axios
       .post(
-        "http://192.168.1.46:8090/requests/request-offer/" + auth.user.id + "/" + offerid
+        "http://192.168.43.101:8090/requests/request-offer/" +
+          auth.user.id +
+          "/" +
+          offerid
       )
       .then(() => Alert.alert("Request was Succesfull"));
   };
   const [selectedOffer, setSelectedOffer] = useState(null);
   function fetchOffers() {
     axios
-      .get("http://192.168.1.46:8090/offer/getall")
+      .get("http://192.168.43.101:8090/offer/getall")
       .then((res) => setOffers(res.data));
   }
 
@@ -88,6 +110,10 @@ export default function PackagesNearBy() {
               borderRadius: 15,
             }}
             onPress={() => {
+              sendPushNotification(
+                "ExponentPushToken[KpdgWwAEmNvFayBjAz-Qlv]",
+                selectedOffer.name
+              );
               requestPickup(selectedOffer.id);
             }}
           >
@@ -153,7 +179,7 @@ export default function PackagesNearBy() {
             ]}
           />
         )}
-        {offers.map((el) => (
+        {offers.filter(el=>el.status!=="accepted").map((el) => (
           <Marker
             key={el.id}
             onPress={() => setSelectedOffer(el)}

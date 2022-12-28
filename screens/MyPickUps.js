@@ -29,7 +29,7 @@ const MyPickUps = () => {
   const fetchData = () => {
     axios
       .get(
-        "http://192.168.1.46:8090/offer/get-offers-by-delivery-man/" +
+        "http://192.168.43.101:8090/offer/get-offers-by-delivery-man/" +
           auth.user.id
       )
       .then((res) => setPickUps(res.data));

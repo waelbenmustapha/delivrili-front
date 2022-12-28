@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   StyleSheet,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -25,7 +26,7 @@ const MyRequestsDelivery = () => {
   const [requests, setRequests] = useState([]);
   const fetchData = () => {
     axios
-      .get("http://192.168.1.46:8090/requests/getbydelid/" + auth.user.id)
+      .get("http://192.168.43.101:8090/requests/getbydelid/" + auth.user.id)
       .then((res) => setRequests(res.data));
   };
   useEffect(() => {
@@ -74,7 +75,7 @@ const MyRequestsDelivery = () => {
           })
           .map((el) => (
             <TouchableOpacity
-            onPress={()=>console.log(el)}
+            onPress={()=>{Alert.alert("Details",`Sender Name :${el.offer.sender.name}  \nSender Email : ${el.offer.sender.email}`);console.log(el)}}
               style={{
                 backgroundColor: "white",
                 height: 150,

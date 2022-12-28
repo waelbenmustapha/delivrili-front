@@ -1,14 +1,33 @@
-import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const PackageRequests = ({ route, navigations }) => {
   const [requests, setRequests] = useState([]);
   const [filter, setFilter] = useState("all");
+  async function sendPushNotification(expoPushToken, packagename, status) {
+    const message = {
+      to: expoPushToken,
+      sound: "default",
+      title: "Request status change",
+      body: "Your request got " + status,
+      data: { someData: "goes here" },
+    };
+
+    await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Accept-encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
+  }
   const acceptOrReject = (reqid, num) => {
     axios
       .post(
-        "http://192.168.1.46:8090/requests/changerequeststatus/" +
+        "http://192.168.43.101:8090/requests/changerequeststatus/" +
           reqid +
           "/" +
           num
@@ -17,7 +36,7 @@ const PackageRequests = ({ route, navigations }) => {
   };
   const fetchData = () => {
     axios
-      .get("http://192.168.1.46:8090/requests/getbyofferid/" + id)
+      .get("http://192.168.43.101:8090/requests/getbyofferid/" + id)
       .then((res) => setRequests(res.data));
   };
   useEffect(() => {
@@ -27,18 +46,32 @@ const PackageRequests = ({ route, navigations }) => {
   const { id } = route.params;
   return (
     <View>
-      <TouchableOpacity onPress={() => setFilter("accepted")}>
-        <Text>accepted</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => setFilter("pending")}>
-        <Text>rejected</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => setFilter("rejected")}>
-        <Text>pending</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => setFilter("all")}>
-        <Text>all</Text>
-      </TouchableOpacity>
+      <View style={{ display: "flex", flexDirection: "row",justifyContent:"space-around" }}>
+        <TouchableOpacity
+          style={styles.filterbutton}
+          onPress={() => setFilter("accepted")}
+        >
+          <Text style={{color:filter==="accepted"?"#fc8783":"black"}}>accepted</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.filterbutton}
+          onPress={() => setFilter("pending")}
+        >
+          <Text style={{color:filter==="pending"?"#fc8783":"black"}}>pending</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.filterbutton}
+          onPress={() => setFilter("rejected")}
+        >
+          <Text style={{color:filter==="rejected"?"#fc8783":"black"}}>rejected</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.filterbutton}
+          onPress={() => setFilter("all")}
+        >
+          <Text style={{color:filter==="all"?"#fc8783":"black"}}>all</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView>
         {requests
           .filter((el) => {
@@ -133,7 +166,14 @@ const PackageRequests = ({ route, navigations }) => {
                   }}
                 >
                   <TouchableOpacity
-                    onPress={() => acceptOrReject(el.id, -1)}
+                    onPress={() => {
+                      acceptOrReject(el.id, -1);
+                      sendPushNotification(
+                        "ExponentPushToken[pPr4sXE83esKV1THC7aQ4k]",
+                        el.name,
+                        "Rejected"
+                      );
+                    }}
                     style={{
                       marginHorizontal: 10,
                       padding: 5,
@@ -147,7 +187,14 @@ const PackageRequests = ({ route, navigations }) => {
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    onPress={() => acceptOrReject(el.id, 1)}
+                    onPress={() => {
+                      acceptOrReject(el.id, 1);
+                      sendPushNotification(
+                        "ExponentPushToken[pPr4sXE83esKV1THC7aQ4k]",
+                        el.name,
+                        "Accepted"
+                      );
+                    }}
                     style={{
                       marginHorizontal: 10,
                       padding: 5,
@@ -204,5 +251,15 @@ const PackageRequests = ({ route, navigations }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  filterbutton: {
+    borderWidth: 1,
+    padding: 5,
+    borderRadius: 7,
+    marginHorizontal: 10,
+    backgroundColor: "#dedede",
+  },
+})
 
 export default PackageRequests;

@@ -6,6 +6,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import PackagesNearBy from "./screens/PackagesNearBy";
 import CreateOffer from "./screens/CreateOffer";
 import Signup from "./screens/Signup";
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 import Signin from "./screens/Signin";
 import Landing from "./screens/Landing";
 import { AuthProvider } from "./context/AuthContext";
@@ -16,10 +18,17 @@ import MyPackagesSender from "./screens/MyPackagesSender";
 import MyPackagesStackScreen from "./navigations/MyPackagesStackScreen";
 import MyRequestsDelivery from "./screens/MyRequestsDelivery";
 import MyPickUps from "./screens/MyPickUps";
+import { useRef ,useEffect} from "react";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 function MyStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -33,6 +42,7 @@ function MyStack() {
     </Stack.Navigator>
   );
 }
+
 function TabNavSender() {
   return (
     <Tab.Navigator
@@ -355,6 +365,24 @@ function TabNavDelivery() {
   );
 }
 export default function App() {
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => console.log(token));
+
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        console.log(notification);
+      });
+
+    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
+  }, []);
+
   return (
     <NavigationContainer>
       <AuthProvider>
@@ -373,3 +401,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+async function registerForPushNotificationsAsync() {
+  let token;
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+  } else {
+    alert('Must use physical device for Push Notifications');
+  }
+
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  return token;
+}

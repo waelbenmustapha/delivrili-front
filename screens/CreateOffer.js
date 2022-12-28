@@ -36,7 +36,7 @@ const CreateOffer = () => {
   function submit() {
     if (name && image && price && weight && pickUp && dropDown) {
       axios
-        .post("http://192.168.1.46:8090/offer/add-offer", {
+        .post("http://192.168.43.101:8090/offer/add-offer", {
           date: date,
           pickUpLocation: pickUp,
           dropDownLocation: dropDown,
@@ -98,9 +98,9 @@ const CreateOffer = () => {
   const handleUpload = (image) => {
     const data = new FormData();
     data.append("file", image);
-    data.append("upload_preset", "dementia");
-    data.append("cloud_name", "elaa");
-    fetch("https://api.cloudinary.com/v1_1/elaa/image/upload", {
+    data.append("upload_preset", "delivri");
+    data.append("cloud_name", "dq1i1g9th");
+    fetch("https://api.cloudinary.com/v1_1/dq1i1g9th/image/upload", {
       method: "post",
       body: data,
     })
